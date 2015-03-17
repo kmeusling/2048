@@ -28,15 +28,15 @@ public class GameModel {
      * 1 1 1
      * 2 2 2
      */
-  private int[] grid;
+  private byte[] grid;
 
   /**
    * Create a new game model with the specified gridSize.
    */
   public GameModel(int gridSize) {
     this.gridSize = gridSize;
-    this.grid = new int[gridSize * gridSize];
-    Arrays.fill(grid, -1);
+    this.grid = new byte[gridSize * gridSize];
+    Arrays.fill(grid, (byte)-1);
   }
 
   /**
@@ -51,7 +51,7 @@ public class GameModel {
   /**
    * Returns the current state of the grid.
    */
-  public int[] getGrid() {
+  public byte[] getGrid() {
     return grid;
   }
 
@@ -78,7 +78,7 @@ public class GameModel {
   private boolean moveRight(boolean noUpdates) {
     boolean anyUpdates = false;
     for (int i = grid.length - 1; i >= 0; i--) {
-      int currNumber = grid[i];
+      byte currNumber = grid[i];
       int yCoord = i / gridSize;
       int nextIndexToCheck = i + 1;
       // try to move all the way to the right side of the grid
@@ -106,7 +106,7 @@ public class GameModel {
   private boolean moveLeft(boolean noUpdates) {
     boolean anyUpdates = false;
     for (int i = 0; i < grid.length; i++) {
-      int currNumber = grid[i];
+      byte currNumber = grid[i];
       int yCoord = i / gridSize;
       int nextIndexToCheck = i - 1;
       // try to move all the way to the left side of the grid
@@ -134,7 +134,7 @@ public class GameModel {
   private boolean moveDown(boolean noUpdates) {
     boolean anyUpdates = false;
     for (int i = grid.length - 1; i >= 0; i--) {
-      int currNumber = grid[i];
+      byte currNumber = grid[i];
       int nextIndexToCheck = i + gridSize;
       // try to move all the way to the bottom of the grid
       while (nextIndexToCheck < grid.length
@@ -161,7 +161,7 @@ public class GameModel {
   private boolean moveUp(boolean noUpdates) {
     boolean anyUpdates = false;
     for (int i = 0; i < grid.length; i++) {
-      int currNumber = grid[i];
+      byte currNumber = grid[i];
       int nextIndexToCheck = i - gridSize;
       // try to move all the way to the top of the grid
       while (nextIndexToCheck >= 0
@@ -193,18 +193,16 @@ public class GameModel {
     List<Integer> emptySpaces = Lists.newArrayList();
     for (int i = 0; i < grid.length; i++) {
       if (grid[i] == -1) {
-        emptySpaces.add(i);
+        emptySpaces.add(Integer.valueOf(i));
       }
     }
 
-    if (emptySpaces.isEmpty()) {
-      return false;
-    } else {
-      int index = (int) (Math.random() * emptySpaces.size());
-      int numberToAdd = Math.random() < LIKELIHOOD_OF_2 ? 1 : 0;
-      grid[emptySpaces.get(index)] = numberToAdd;
-      return true;
-    }
+    if (emptySpaces.isEmpty()) return false;
+
+    int index = (int) (Math.random() * emptySpaces.size());
+    byte numberToAdd = (byte) (Math.random() < LIKELIHOOD_OF_2 ? 1 : 0);
+    grid[emptySpaces.get(index).intValue()] = numberToAdd;
+    return true;
   }
 
   /**

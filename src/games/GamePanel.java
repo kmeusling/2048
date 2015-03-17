@@ -58,7 +58,7 @@ public class GamePanel
   }
 
 
-  private static void drawNumberInGrid(int logNumber, int gridX, int gridY, Graphics g) {
+  private static void drawNumberInGrid(byte logNumber, int gridX, int gridY, Graphics g) {
 
     if (logNumber < 0) return;
 
@@ -77,7 +77,7 @@ public class GamePanel
   }
 
 
-  private static int getFontSize(int logNumber) {
+  private static int getFontSize(byte logNumber) {
 
     if (logNumber < 7) return 48; // 1-64
     if (logNumber < 11) return 32; // 128-512
@@ -86,16 +86,15 @@ public class GamePanel
   }
 
 
-  private static Color getColorForNumber(int logNumber) {
+  private static Color getColorForNumber(byte logNumber) {
 
     return logNumber <= 5 ? BLACK : WHITE;
   }
 
 
-  private static Color getColorForCell(int logNumber) {
+  private static Color getColorForCell(byte logNumber) {
 
     if (logNumber < 0) {
-
       return EMPTY_CELL_COLOR;
     }
 
@@ -120,16 +119,16 @@ public class GamePanel
   }
 
 
-  private static void drawCells(int[] grid, Graphics g) {
+  private static void drawCells(byte[] grid, Graphics g) {
 
     for (int i = 0; i < grid.length; i++) {
-      int logNumber = grid[i];
+      byte logNumber = grid[i];
       drawCell(logNumber, i % GRID_SIZE, i / GRID_SIZE, g);
     }
   }
 
 
-  private static void drawCell(int logNumber, int x, int y, Graphics g) {
+  private static void drawCell(byte logNumber, int x, int y, Graphics g) {
 
     Graphics2D g2 = (Graphics2D) g;
     g2.setPaint(getColorForCell(logNumber));
