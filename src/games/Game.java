@@ -1,10 +1,8 @@
 package games;
 
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import static games.Constants.BOT_DELAY_MS;
 import static games.Constants.GRID_SIZE;
@@ -14,7 +12,8 @@ import javax.swing.Timer;
 /**
  * A game manager that starts a game and responds to player actions.
  */
-public class Game implements KeyListener {
+public class Game
+    extends KeyAdapter {
 
   // The current running state of the game
   private GameState state = GameState.RUNNING;
@@ -44,16 +43,13 @@ public class Game implements KeyListener {
   }
 
   public void runGame() {
-    EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        gameWindow = new GameWindow(Game.this);
-        gameWindow.addKeyListener(Game.this);
-        gameWindow.setVisible(true);
+    EventQueue.invokeLater( () -> {
+      gameWindow = new GameWindow(Game.this);
+      gameWindow.addKeyListener(Game.this);
+      gameWindow.setVisible(true);
 
-        startNewGame();
-      }
-    });
+      startNewGame();
+    } );
   }
 
   private void startNewGame() {
@@ -72,17 +68,14 @@ public class Game implements KeyListener {
     final Bot bot = new SimpleBot();
 
     final Timer timer = new Timer(BOT_DELAY_MS, null);
-    timer.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent actionEvent) {
-        if (state == GameState.RUNNING && botMode) {
-          executeAction(bot.getNextMove(GameModel.copyOf(model)));
-        } else {
-          timer.stop();
-        }
-
+    timer.addActionListener( actionEvent -> {
+      if (state == GameState.RUNNING && botMode) {
+        executeAction(bot.getNextMove(GameModel.copyOf(model)));
+      } else {
+        timer.stop();
       }
-    });
+
+    } );
 
     timer.start();
   }
@@ -141,15 +134,6 @@ public class Game implements KeyListener {
     }
   }
 
-  @Override
-  public void keyTyped(KeyEvent keyEvent) {
-    // Don't care
-  }
-
-  @Override
-  public void keyReleased(KeyEvent keyEvent) {
-    // Don't care
-  }
 
   public static void main(String[] args) {
     Game game = new Game();

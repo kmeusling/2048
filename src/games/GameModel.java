@@ -1,11 +1,12 @@
 package games;
 
-import com.google.common.collect.Lists;
-
 import java.util.Arrays;
 import java.util.List;
 
-import static games.Constants.*;
+import static games.Constants.LIKELIHOOD_OF_2;
+import static games.Constants.WINNING_POWER_OF_2;
+
+import com.google.common.collect.Lists;
 
 /**
  * Representation of the state of a game.
@@ -13,7 +14,7 @@ import static games.Constants.*;
 public class GameModel {
 
   // The width and height of the game grid
-  private int gridSize;
+  private final int gridSize;
 
   /*
      * A 1D representation of the log values of a corresponding 2D grid.
@@ -210,8 +211,9 @@ public class GameModel {
    * Returns true if the winning number has been reached.
    */
   public boolean hasWon() {
-    for (int i = 0; i < grid.length; i++) {
-      if (grid[i] == WINNING_POWER_OF_2) {
+
+    for( int aGrid : grid ) {
+      if( aGrid == WINNING_POWER_OF_2 ) {
         return true;
       }
     }
@@ -227,8 +229,9 @@ public class GameModel {
   }
 
   private boolean isBoardFull() {
-    for (int i = 0; i < grid.length; i++) {
-      if (grid[i] == -1) {
+
+    for( int aGrid : grid ) {
+      if( aGrid == -1 ) {
         return false;
       }
     }

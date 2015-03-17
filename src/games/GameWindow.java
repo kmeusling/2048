@@ -19,8 +19,8 @@ public class GameWindow extends JFrame {
   public static final int WINDOW_HEIGHT = 600;
 
 
-  GamePanel gamePanel;
-  Game gameManager;
+  final GamePanel gamePanel;
+  final Game gameManager;
 
   public GameWindow(Game gameManager) throws HeadlessException {
     super("2048");
