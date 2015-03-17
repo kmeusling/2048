@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 
-import static games.Constants.LIKELIHOOD_OF_2;
+import static games.Constants.LIKELIHOOD_OF_4;
 import static games.Constants.WINNING_POWER_OF_2;
 
 /**
@@ -206,7 +206,7 @@ public class GameModel {
     if (emptySpaces.isEmpty()) return false;
 
     int index = (int) (Math.random() * emptySpaces.size());
-    byte numberToAdd = (byte) (Math.random() < LIKELIHOOD_OF_2 ? 1 : 0);
+    byte numberToAdd = (byte) (Math.random() < LIKELIHOOD_OF_4 ? 2 : 1);
     grid[emptySpaces.get(index).intValue()] = numberToAdd;
     return true;
   }
