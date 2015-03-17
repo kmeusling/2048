@@ -58,8 +58,6 @@ public class GamePanel
 
     private static void drawNumberInGrid( int logNumber, int gridX, int gridY, Graphics g ) {
 
-
-
         g.setFont( new Font( "Helvetica Neue", Font.BOLD, getFontSize(logNumber) ) );
 
         FontMetrics fm = g.getFontMetrics();
@@ -104,11 +102,13 @@ public class GamePanel
 
     private static void drawWinLoseLabels( Game.GameState state, Graphics g ) {
 
+        g.setFont( new Font( "Helvetica Neue", Font.BOLD, 18 ) );
+
         if( state == Game.GameState.WON ) {
-            g.drawString( "Yay! You won :D Press space to retry", 20, 200 );
+            g.drawString( "Yay! You won :D Press space to retry", 150, 20 );
         }
         else if( state == Game.GameState.LOST ) {
-            g.drawString( "Boo! You lost :( Press space to retry", 20, 200 );
+            g.drawString( "Boo! You lost :( Press space to retry", 150, 20 );
         }
     }
 
