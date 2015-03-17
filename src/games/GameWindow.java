@@ -1,12 +1,8 @@
 package games;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
-
-import static games.Constants.GRID_SIZE;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
