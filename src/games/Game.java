@@ -1,13 +1,15 @@
 package games;
 
-import static games.Constants.*;
-
-import javax.swing.*;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import static games.Constants.BOT_DELAY_MS;
+import static games.Constants.GRID_SIZE;
+
+import javax.swing.Timer;
 
 /**
  * A game manager that starts a game and responds to player actions.
@@ -57,6 +59,7 @@ public class Game implements KeyListener {
   private void startNewGame() {
     state = GameState.RUNNING;
     model = new GameModel(GRID_SIZE);
+    model.addNumber();
     model.addNumber();
     gameWindow.repaint();
 
