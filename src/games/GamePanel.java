@@ -80,9 +80,9 @@ public class GamePanel
   private static int getFontSize(byte logNumber) {
 
     if (logNumber < 7) return 48; // 1-64
-    if (logNumber < 11) return 32; // 128-512
-    if (logNumber < 14) return 24; // 4 digits
-    return 18; // 5 digits+
+    if (logNumber < 11) return 36; // 128-512
+    if (logNumber < 14) return 28; // 4 digits
+    return 22; // 5 digits+
   }
 
 
