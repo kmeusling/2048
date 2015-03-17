@@ -12,6 +12,7 @@ import javax.swing.Timer;
 /**
  * A game manager that starts a game and responds to player actions.
  */
+// TODO: Further decompose this class into one that is aware of the game rules and one to process inputs/rendering
 public class Game
     extends KeyAdapter {
 
@@ -65,7 +66,7 @@ public class Game
   }
 
   private void startBot() {
-    final Bot bot = new SimpleBot();
+    final Bot bot = MonteCarloBot.makeRandomBased();
 
     final Timer timer = new Timer(BOT_DELAY_MS, null);
     timer.addActionListener( actionEvent -> {

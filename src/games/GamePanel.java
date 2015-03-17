@@ -62,7 +62,7 @@ public class GamePanel
 
     if (logNumber < 0) return;
 
-    g.setFont(new Font("Helvetica Neue", Font.BOLD, getFontSize(logNumber)));
+    g.setFont(new Font("Helvetica Neue", Font.BOLD, getCellFontSize(logNumber)));
 
     FontMetrics fm = g.getFontMetrics();
     String s = String.valueOf(1 << logNumber);
@@ -77,7 +77,7 @@ public class GamePanel
   }
 
 
-  private static int getFontSize(byte logNumber) {
+  private static int getCellFontSize(byte logNumber) {
 
     if (logNumber < 7) return 48; // 1-64
     if (logNumber < 11) return 36; // 128-512

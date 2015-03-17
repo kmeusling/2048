@@ -1,12 +1,12 @@
 package games;
 
+import com.google.common.collect.Lists;
+
 import java.util.Arrays;
 import java.util.List;
 
 import static games.Constants.LIKELIHOOD_OF_2;
 import static games.Constants.WINNING_POWER_OF_2;
-
-import com.google.common.collect.Lists;
 
 /**
  * Representation of the state of a game.
@@ -21,11 +21,11 @@ public class GameModel {
      * grid[n] gives the log value of co-ordinate (n%gridSize, n/gridSize)
      *
      * e.g. this array
-     * [012000111]
+     * [012030111]
      *
      * represents this 2D grid
      * 1 2 4
-     * 1 1 1
+     * 1 8 1
      * 2 2 2
      */
   private byte[] grid;
@@ -34,18 +34,21 @@ public class GameModel {
    * Create a new game model with the specified gridSize.
    */
   public GameModel(int gridSize) {
+    this(gridSize, new byte[gridSize * gridSize]);
+    Arrays.fill(grid, (byte) -1);
+  }
+
+  private GameModel(int gridSize, byte[] grid) {
     this.gridSize = gridSize;
-    this.grid = new byte[gridSize * gridSize];
-    Arrays.fill(grid, (byte)-1);
+    this.grid = grid;
   }
 
   /**
    * Returns a copy of the given model.
    */
   public static GameModel copyOf(GameModel model) {
-    GameModel clone = new GameModel(model.gridSize);
-    clone.grid = Arrays.copyOf(model.getGrid(), model.getGrid().length);
-    return clone;
+    byte[] gridCopy = Arrays.copyOf(model.getGrid(), model.getGrid().length);
+    return new GameModel(model.gridSize, gridCopy);
   }
 
   /**
@@ -57,38 +60,38 @@ public class GameModel {
 
   /**
    * Executes a move in the requested direction, updating the game state as necessary.
+   *
+   * @return true if a move was made.
    */
-  public void executeMove(Direction direction) {
+  public boolean executeMove(Direction direction) {
     switch (direction) {
       case UP:
-        moveUp(false);
-        break;
+        return moveUp(true);
       case DOWN:
-        moveDown(false);
-        break;
+        return moveDown(true);
       case LEFT:
-        moveLeft(false);
-        break;
+        return moveLeft(true);
       case RIGHT:
-        moveRight(false);
-        break;
+        return moveRight(true);
     }
+    return false;
   }
 
-  private boolean moveRight(boolean noUpdates) {
+  private boolean moveRight(boolean doUpdate) {
     boolean anyUpdates = false;
+    int step = 1;
     for (int i = grid.length - 1; i >= 0; i--) {
       byte currNumber = grid[i];
       int yCoord = i / gridSize;
-      int nextIndexToCheck = i + 1;
+      int nextIndexToCheck = i + step;
       // try to move all the way to the right side of the grid
       while (nextIndexToCheck / gridSize == yCoord
-          && (grid[nextIndexToCheck] == -1 || grid[nextIndexToCheck] == currNumber)) {
-        if (noUpdates) {
+              && (grid[nextIndexToCheck] == -1 || grid[nextIndexToCheck] == currNumber)) {
+        if (!doUpdate) {
           return true;
         }
         anyUpdates = true;
-        grid[nextIndexToCheck - 1] = -1;
+        grid[nextIndexToCheck - step] = -1;
         if (grid[nextIndexToCheck] == -1) {
           // empty, so just move the number
           grid[nextIndexToCheck] = currNumber;
@@ -97,26 +100,27 @@ public class GameModel {
           grid[nextIndexToCheck] += 1;
           currNumber += 1;
         }
-        nextIndexToCheck += 1;
+        nextIndexToCheck += step;
       }
     }
     return anyUpdates;
   }
 
-  private boolean moveLeft(boolean noUpdates) {
+  private boolean moveLeft(boolean doUpdate) {
     boolean anyUpdates = false;
+    int step = -1;
     for (int i = 0; i < grid.length; i++) {
       byte currNumber = grid[i];
       int yCoord = i / gridSize;
-      int nextIndexToCheck = i - 1;
+      int nextIndexToCheck = i + step;
       // try to move all the way to the left side of the grid
       while (nextIndexToCheck / gridSize == yCoord && nextIndexToCheck >= 0
-          && (grid[nextIndexToCheck] == -1 || grid[nextIndexToCheck] == currNumber)) {
-        if (noUpdates) {
+              && (grid[nextIndexToCheck] == -1 || grid[nextIndexToCheck] == currNumber)) {
+        if (!doUpdate) {
           return true;
         }
         anyUpdates = true;
-        grid[nextIndexToCheck + 1] = -1;
+        grid[nextIndexToCheck - step] = -1;
         if (grid[nextIndexToCheck] == -1) {
           // empty, so just move the number
           grid[nextIndexToCheck] = currNumber;
@@ -125,25 +129,26 @@ public class GameModel {
           grid[nextIndexToCheck] += 1;
           currNumber += 1;
         }
-        nextIndexToCheck -= 1;
+        nextIndexToCheck += step;
       }
     }
     return anyUpdates;
   }
 
-  private boolean moveDown(boolean noUpdates) {
+  private boolean moveDown(boolean doUpdate) {
     boolean anyUpdates = false;
+    int step = gridSize;
     for (int i = grid.length - 1; i >= 0; i--) {
       byte currNumber = grid[i];
-      int nextIndexToCheck = i + gridSize;
+      int nextIndexToCheck = i + step;
       // try to move all the way to the bottom of the grid
       while (nextIndexToCheck < grid.length
-          && (grid[nextIndexToCheck] == -1 || grid[nextIndexToCheck] == currNumber)) {
-        if (noUpdates) {
+              && (grid[nextIndexToCheck] == -1 || grid[nextIndexToCheck] == currNumber)) {
+        if (!doUpdate) {
           return true;
         }
         anyUpdates = true;
-        grid[nextIndexToCheck - gridSize] = -1;
+        grid[nextIndexToCheck - step] = -1;
         if (grid[nextIndexToCheck] == -1) {
           // empty, so just move the number
           grid[nextIndexToCheck] = currNumber;
@@ -152,25 +157,26 @@ public class GameModel {
           grid[nextIndexToCheck] += 1;
           currNumber += 1;
         }
-        nextIndexToCheck += gridSize;
+        nextIndexToCheck += step;
       }
     }
     return anyUpdates;
   }
 
-  private boolean moveUp(boolean noUpdates) {
+  private boolean moveUp(boolean doUpdate) {
     boolean anyUpdates = false;
+    int step = -gridSize;
     for (int i = 0; i < grid.length; i++) {
       byte currNumber = grid[i];
-      int nextIndexToCheck = i - gridSize;
+      int nextIndexToCheck = i + step;
       // try to move all the way to the top of the grid
       while (nextIndexToCheck >= 0
-          && (grid[nextIndexToCheck] == -1 || grid[nextIndexToCheck] == currNumber)) {
-        if (noUpdates) {
+              && (grid[nextIndexToCheck] == -1 || grid[nextIndexToCheck] == currNumber)) {
+        if (!doUpdate) {
           return true;
         }
         anyUpdates = true;
-        grid[nextIndexToCheck + gridSize] = -1;
+        grid[nextIndexToCheck - step] = -1;
         if (grid[nextIndexToCheck] == -1) {
           // empty, so just move the number
           grid[nextIndexToCheck] = currNumber;
@@ -179,7 +185,7 @@ public class GameModel {
           grid[nextIndexToCheck] += 1;
           currNumber += 1;
         }
-        nextIndexToCheck -= gridSize;
+        nextIndexToCheck += step;
       }
     }
     return anyUpdates;
@@ -210,8 +216,8 @@ public class GameModel {
    */
   public boolean hasWon() {
 
-    for( int aGrid : grid ) {
-      if( aGrid == WINNING_POWER_OF_2 ) {
+    for (int aGrid : grid) {
+      if (aGrid == WINNING_POWER_OF_2) {
         return true;
       }
     }
@@ -222,14 +228,15 @@ public class GameModel {
    * Returns true if there is still a move remaining.
    */
   public boolean isThereAValidMove() {
-    return !isBoardFull() || moveUp(true) || moveDown(true)
-        || moveLeft(true) || moveRight(true);
+    return !isBoardFull() || moveUp(false) || moveDown(false)
+            || moveLeft(false) || moveRight(false);
   }
+
 
   private boolean isBoardFull() {
 
-    for( int aGrid : grid ) {
-      if( aGrid == -1 ) {
+    for (int aGrid : grid) {
+      if (aGrid == -1) {
         return false;
       }
     }
