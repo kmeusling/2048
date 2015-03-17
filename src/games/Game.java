@@ -1,20 +1,19 @@
 package games;
 
-import java.awt.EventQueue;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import static games.Constants.BOT_DELAY_MS;
 import static games.Constants.GRID_SIZE;
 
-import javax.swing.Timer;
-
 /**
  * A game manager that starts a game and responds to player actions.
  */
 // TODO: Further decompose this class into one that is aware of the game rules and one to process inputs/rendering
 public class Game
-    extends KeyAdapter {
+        extends KeyAdapter {
 
   // The current running state of the game
   private GameState state = GameState.RUNNING;
@@ -44,13 +43,13 @@ public class Game
   }
 
   public void runGame() {
-    EventQueue.invokeLater( () -> {
+    EventQueue.invokeLater(() -> {
       gameWindow = new GameWindow(Game.this);
       gameWindow.addKeyListener(Game.this);
       gameWindow.setVisible(true);
 
       startNewGame();
-    } );
+    });
   }
 
   private void startNewGame() {
@@ -69,14 +68,14 @@ public class Game
     final Bot bot = MonteCarloBot.makeRandomBased();
 
     final Timer timer = new Timer(BOT_DELAY_MS, null);
-    timer.addActionListener( actionEvent -> {
+    timer.addActionListener(actionEvent -> {
       if (state == GameState.RUNNING && botMode) {
         executeAction(bot.getNextMove(GameModel.copyOf(model)));
       } else {
         timer.stop();
       }
 
-    } );
+    });
 
     timer.start();
   }
@@ -91,7 +90,7 @@ public class Game
     } else {
       gameWindow.repaint();
       model.addNumber();
-      if (!model.isThereAValidMove()){
+      if (!model.isThereAValidMove()) {
         state = GameState.LOST;
       }
       gameWindow.repaint();
@@ -104,8 +103,9 @@ public class Game
       botMode = !botMode;
       System.out.println("Bot mode: " + botMode);
       startBot();
-    }
-    if (state == GameState.RUNNING && !botMode) {
+    } else if (keyEvent.getKeyCode() == KeyEvent.VK_SPACE) {
+      startNewGame();
+    } else if (state == GameState.RUNNING && !botMode) {
       switch (keyEvent.getKeyCode()) {
         case KeyEvent.VK_UP:
           executeAction(Direction.UP);
@@ -118,16 +118,6 @@ public class Game
           break;
         case KeyEvent.VK_RIGHT:
           executeAction(Direction.RIGHT);
-          break;
-        default:
-          break;
-      }
-    }
-
-    if (state == GameState.WON || state == GameState.LOST) {
-      switch (keyEvent.getKeyCode()) {
-        case KeyEvent.VK_SPACE:
-          startNewGame();
           break;
         default:
           break;
