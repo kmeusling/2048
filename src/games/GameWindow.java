@@ -1,18 +1,12 @@
 package games;
 
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
-
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * A display that renders a 2048 game window.
  */
-@SuppressWarnings( "serial" )
+@SuppressWarnings("serial")
 public class GameWindow extends JFrame {
 
   public static final int WINDOW_WIDTH = 600;
@@ -25,7 +19,7 @@ public class GameWindow extends JFrame {
   public GameWindow(Game gameManager) throws HeadlessException {
     super("2048");
     this.gameManager = gameManager;
-    gamePanel = new GamePanel( this );
+    gamePanel = new GamePanel(this);
     initWindow();
   }
 
@@ -35,8 +29,9 @@ public class GameWindow extends JFrame {
     setResizable(false);
     setLocationRelativeTo(null);
     setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     JLabel instructionLabel = new JLabel(
-        "Welcome to 2048! Use the arrow keys, or press b to toggle bot mode on/off");
+            "Welcome to 2048! Use the arrow keys, or press b to toggle bot mode on/off");
     JPanel instructionPanel = new JPanel();
     instructionPanel.setLayout(new GridBagLayout());
     instructionPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, 50));
