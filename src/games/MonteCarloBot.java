@@ -13,7 +13,7 @@ public class MonteCarloBot implements Bot {
   /**
    * For each potential next move, simulate this many games after the move is made.
    */
-  private static final int NUM_SIMULATIONS = 10000;
+  private static final int NUM_SIMULATIONS = 3000;
 
   /**
    * Fraction of the score bonus for each empty cell on a board.
@@ -23,7 +23,7 @@ public class MonteCarloBot implements Bot {
   /**
    * Cut simulations short and score the grid after this many moves
    */
-  private static final int MAX_MOVE_LOOKAHEAD = 10;
+  private static final int MAX_MOVE_LOOKAHEAD = 8;
 
   /**
    * Score gradient array for the gradient scoring method.
@@ -123,8 +123,8 @@ public class MonteCarloBot implements Bot {
     }
 
 //    return computeScore(model);
-    return computeGradientScore(model);
-//    return computeEmptyCellScore(model);
+//    return computeGradientScore(model);
+    return computeEmptyCellScore(model);
   }
 
 
