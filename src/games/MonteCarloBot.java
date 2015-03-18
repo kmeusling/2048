@@ -18,12 +18,35 @@ public class MonteCarloBot implements Bot {
   /**
    * Fraction of the score bonus for each empty cell on a board.
    */
-  private static final float EMPTY_CELL_SCORE_BONUS = 0.2f;
+  private static final float EMPTY_CELL_SCORE_BONUS = 0.5f;
 
   /**
    * Cut simulations short and score the grid after this many moves
    */
   private static final int MAX_MOVE_LOOKAHEAD = 10;
+
+  /**
+   * Score gradient array for the gradient scoring method.
+   * see https://codemyroad.wordpress.com/2014/05/14/2048-ai-the-intelligent-bot/
+   */
+  private static final int[][] gradients = {
+          {3, 2, 1, 0,
+                  2, 1, 0, -1,
+                  1, 0, -1, -2,
+                  0, -1, -2, 3},
+          {0, 1, 2, 3,
+                  -1, 0, 1, 2,
+                  -2, -1, 0, 1,
+                  -3, -2, -1, 0},
+          {0, -1, -2, -3,
+                  1, 0, -1, -2,
+                  2, 1, 0, -1,
+                  3, 2, 1, 0},
+          {-3, -2, -1, 0,
+                  -2, -1, 0, 1,
+                  -1, 0, 1, 2,
+                  0, 1, 2, 3}
+  };
 
   private final Bot coreBot;
 
@@ -39,7 +62,7 @@ public class MonteCarloBot implements Bot {
   @Override
   public Direction getNextMove(GameModel model) {
 
-    float bestScore = -1;
+    float bestScore = Float.NEGATIVE_INFINITY;
     Direction bestDirection = null;
 
     for (Direction direction : Direction.VALUES) {
@@ -99,10 +122,15 @@ public class MonteCarloBot implements Bot {
       numMoves++;
     }
 
-    return computeScore(model);
+//    return computeScore(model);
+    return computeGradientScore(model);
+//    return computeEmptyCellScore(model);
   }
 
 
+  /**
+   * Compute a grid score based on the sum of the values on each cell.
+   */
   private static float computeScore(GameModel model) {
 
     float score = 0;
@@ -115,5 +143,45 @@ public class MonteCarloBot implements Bot {
       }
     }
     return score * (1 + numEmptyCells * EMPTY_CELL_SCORE_BONUS);
+  }
+
+  /**
+   * Compute a grid score based on the number of empty cells on the board.
+   */
+  private static float computeEmptyCellScore(GameModel model) {
+
+    int numEmptyCells = 0;
+    for (byte b : model.getGrid()) {
+      if (b < 0) {
+        numEmptyCells++;
+      }
+    }
+    return 1 << numEmptyCells;
+  }
+
+  /**
+   * Compute a grid score based on the gradient method, a human heuristic.
+   * NOTE: This seems to suck.
+   */
+  private static float computeGradientScore(GameModel model) {
+
+    float bestScore = Float.NEGATIVE_INFINITY;
+    int numEmptyCells = 0;
+    for (int i = 0; i < 4; i++) {
+      float score = 0;
+      int[] gradientArray = gradients[i];
+      for (int j = 0; j < model.getGrid().length; j++) {
+        byte b = model.getGrid()[j];
+        if (b < 0) {
+          numEmptyCells++;
+        } else {
+          int gradient = gradientArray[j];
+          score += (1 << b) * gradient;
+        }
+      }
+      score *= (1 + numEmptyCells * EMPTY_CELL_SCORE_BONUS);
+      bestScore = max(bestScore, score);
+    }
+    return bestScore;
   }
 }
