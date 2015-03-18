@@ -83,7 +83,7 @@ public class Game
 
     model.executeMove(direction);
 
-    if (model.hasWon()) {
+    if (model.hasWon() && !botMode) {
       state = GameState.WON;
       gameWindow.repaint();
     } else {
