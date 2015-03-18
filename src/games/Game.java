@@ -74,7 +74,6 @@ public class Game
       } else {
         timer.stop();
       }
-
     });
 
     timer.start();

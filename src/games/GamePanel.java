@@ -98,9 +98,12 @@ public class GamePanel
       return EMPTY_CELL_COLOR;
     }
 
-    if (logNumber <= 11) {
+    if (logNumber < 11) {
       int gComponent = 250 - (25 * logNumber);
       return new Color(255, gComponent, 0);
+    } else if (logNumber < 21) {
+      int rComponent = 250 - (25 * (logNumber - 10));
+      return new Color(rComponent, 0, 0);
     } else {
       return BLACK;
     }

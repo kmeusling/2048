@@ -18,7 +18,7 @@ public class MonteCarloBot implements Bot {
   /**
    * Fraction of the score bonus for each empty cell on a board.
    */
-  private static final float EMPTY_CELL_SCORE_BONUS = 0.1f;
+  private static final float EMPTY_CELL_SCORE_BONUS = 0.2f;
 
   /**
    * Cut simulations short and score the grid after this many moves
