@@ -31,7 +31,9 @@ public class Game
   public enum GameState {
     RUNNING,
     WON,
-    LOST,
+    LOST,;
+
+
   }
 
   public GameModel getGameModel() {

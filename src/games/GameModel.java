@@ -12,6 +12,8 @@ public class GameModel {
   // The width and height of the game grid
   private final int gridSize;
 
+  private int score;
+
   private static final NumberPlacer numberPlacer = new NumberPlacer();
 
   /*
@@ -46,7 +48,9 @@ public class GameModel {
    */
   public static GameModel copyOf(GameModel model) {
     byte[] gridCopy = Arrays.copyOf(model.getGrid(), model.getGrid().length);
-    return new GameModel(model.gridSize, gridCopy);
+    GameModel copy = new GameModel(model.gridSize, gridCopy);
+    copy.setScore(model.getScore());
+    return copy;
   }
 
   /**
@@ -109,10 +113,10 @@ public class GameModel {
     int step = -1;
     for (int i = 0; i < grid.length; i++) {
       byte currNumber = grid[i];
-      int yCoord = i / gridSize;
+      int yCoord = i >> 2;
       int nextIndexToCheck = i + step;
       // try to move all the way to the left side of the grid
-      while (nextIndexToCheck / gridSize == yCoord && nextIndexToCheck >= 0
+      while (nextIndexToCheck >= 0 && nextIndexToCheck >> 2 == yCoord
               && (grid[nextIndexToCheck] == -1 || grid[nextIndexToCheck] == currNumber)) {
         if (!doUpdate) {
           return true;
@@ -213,7 +217,6 @@ public class GameModel {
 
 
   private boolean isBoardFull() {
-
     for (int aGrid : grid) {
       if (aGrid == -1) {
         return false;
@@ -223,7 +226,15 @@ public class GameModel {
   }
 
   public void addNumber() {
-    numberPlacer.addNumber(grid);
+    score += numberPlacer.addNumber(grid);
+  }
+
+  public int getScore() {
+    return score;
+  }
+
+  public void setScore(int score) {
+    this.score = score;
   }
 
   private static class NumberPlacer {
@@ -235,7 +246,7 @@ public class GameModel {
      * Tries to add a new number to the grid according to the game rules.
      * Returns true if a number was added, i.e. the board was not full.
      */
-    public boolean addNumber(byte[] grid) {
+    public int addNumber(byte[] grid) {
       numFreeCells = 0;
       for (int i = 0; i < grid.length; i++) {
         if (grid[i] == -1) {
@@ -244,12 +255,12 @@ public class GameModel {
         }
       }
 
-      if (numFreeCells == 0) return false;
+      if (numFreeCells == 0) return 0;
 
       int index = (int) (Math.random() * numFreeCells);
       byte numberToAdd = (byte) (Math.random() < LIKELIHOOD_OF_4 ? 2 : 1);
       grid[freeCells[index]] = numberToAdd;
-      return true;
+      return numberToAdd * 2;
     }
   }
 }

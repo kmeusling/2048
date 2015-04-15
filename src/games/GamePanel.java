@@ -111,14 +111,19 @@ public class GamePanel
 
 
   private static void drawWinLoseLabels(Game.GameState state, Graphics g) {
-
+    g.setColor(BLACK);
     g.setFont(new Font("Helvetica Neue", Font.BOLD, 18));
-
     if (state == Game.GameState.WON) {
-      g.drawString("Yay! You won :D Press space to retry", 150, 20);
+      g.drawString("Yay! You won :D Press space to retry", 150, 30);
     } else if (state == Game.GameState.LOST) {
-      g.drawString("Boo! You lost :( Press space to retry", 150, 20);
+      g.drawString("Boo! You lost :( Press space to retry", 150, 30);
     }
+  }
+
+  private static void drawScore(GameModel model, Graphics g) {
+    g.setFont(new Font("Helvetica Neue", Font.BOLD, 14));
+    g.setColor(BLACK);
+    g.drawString("Score: " + model.getScore(), 270, 10);
   }
 
 
@@ -160,6 +165,7 @@ public class GamePanel
     Game gameManager = gameWindow.gameManager;
     drawBackground(g);
     drawCells(gameManager.getGameModel().getGrid(), g);
+    drawScore(gameManager.getGameModel(), g);
     drawWinLoseLabels(gameManager.getGameState(), g);
   }
 
