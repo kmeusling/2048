@@ -1,8 +1,10 @@
 package games;
 
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
-import static games.Constants.*;
+import static games.Constants.LIKELIHOOD_OF_4;
+import static games.Constants.WINNING_POWER_OF_2;
 
 /**
  * Representation of the state of a game.
@@ -113,10 +115,12 @@ public class GameModel {
     int step = -1;
     for (int i = 0; i < grid.length; i++) {
       byte currNumber = grid[i];
-      int yCoord = i >> 2;
+      // TODO(lpalm): These two divisions by gridsize overwhelm the CPU's ALU and halve the speed of the method.
+      // Consider using bit-twiddling for fast board updates (implementations available online)
+      int yCoord = i /gridSize;
       int nextIndexToCheck = i + step;
       // try to move all the way to the left side of the grid
-      while (nextIndexToCheck >= 0 && nextIndexToCheck >> 2 == yCoord
+      while (nextIndexToCheck >= 0 && nextIndexToCheck / gridSize == yCoord
               && (grid[nextIndexToCheck] == -1 || grid[nextIndexToCheck] == currNumber)) {
         if (!doUpdate) {
           return true;
@@ -239,28 +243,35 @@ public class GameModel {
 
   private static class NumberPlacer {
 
-    private final int[] freeCells = new int[GRID_SIZE * GRID_SIZE];
-    private int numFreeCells;
-
     /**
      * Tries to add a new number to the grid according to the game rules.
-     * Returns true if a number was added, i.e. the board was not full.
+     * Returns the number number that was added, or zero if board was full.
      */
     public int addNumber(byte[] grid) {
-      numFreeCells = 0;
+
+      ThreadLocalRandom rng = ThreadLocalRandom.current();
+
+      int numFreeCells = 0;
       for (int i = 0; i < grid.length; i++) {
         if (grid[i] == -1) {
-          freeCells[numFreeCells] = i;
           numFreeCells++;
         }
       }
 
       if (numFreeCells == 0) return 0;
 
-      int index = (int) (Math.random() * numFreeCells);
-      byte numberToAdd = (byte) (Math.random() < LIKELIHOOD_OF_4 ? 2 : 1);
-      grid[freeCells[index]] = numberToAdd;
-      return numberToAdd * 2;
+      int index = rng.nextInt(numFreeCells);
+      byte numberToAdd = (byte) (rng.nextFloat() < LIKELIHOOD_OF_4 ? 2 : 1);
+
+      for (int i = 0; i < grid.length; i++) {
+        if (grid[i] == -1) {
+          if( --numFreeCells <= index) {
+            grid[i] = numberToAdd;
+            return numberToAdd * 2;
+          }
+        }
+      }
+      return 0;
     }
   }
 }

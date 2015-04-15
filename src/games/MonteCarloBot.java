@@ -1,5 +1,11 @@
 package games;
 
+import com.google.common.util.concurrent.AtomicDouble;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import static java.lang.Math.max;
 
 /**
@@ -11,19 +17,22 @@ import static java.lang.Math.max;
 public class MonteCarloBot implements Bot {
 
   /**
-   * For each potential next move, simulate this many games after the move is made.
+   * For each potential next move, simulate this many games per thread after the move is made.
    */
-  private static final int NUM_SIMULATIONS = 3000;
+  private static final int NUM_SIMULATIONS = 2000;
 
   /**
    * Fraction of the score bonus for each empty cell on a board.
    */
-  private static final float EMPTY_CELL_SCORE_BONUS = 0.5f;
+  private static final float EMPTY_CELL_SCORE_BONUS = 0.05f;
 
   /**
    * Cut simulations short and score the grid after this many moves
    */
-  private static final int MAX_MOVE_LOOKAHEAD = 8;
+  private static final int MAX_MOVE_LOOKAHEAD = 14;
+
+  private static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
+
 
   /**
    * Score gradient array for the gradient scoring method.
@@ -48,7 +57,10 @@ public class MonteCarloBot implements Bot {
                   0, 1, 2, 3}
   };
 
+
   private final Bot coreBot;
+
+  private final ExecutorService threadPool = Executors.newFixedThreadPool(NUM_THREADS);
 
   public static MonteCarloBot makeRandomBased() {
 
@@ -71,10 +83,23 @@ public class MonteCarloBot implements Bot {
       if (!movedModel.executeMove(direction)) {
         continue;
       }
-      movedModel.addNumber();
 
-      float score = getAverageScore(movedModel);
+      AtomicDouble scoreForMove = new AtomicDouble();
+      CountDownLatch latch = new CountDownLatch(NUM_THREADS);
+
+      for (int i = 0; i < NUM_THREADS; i++) {
+        getAverageScoreAsync(GameModel.copyOf(movedModel), scoreForMove, latch);
+      }
+
+      try {
+        latch.await();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+
+//      float score = getAverageScore(movedModel);
 //      float score = getBestScore(movedModel);
+      float score = scoreForMove.floatValue();
       if (score > bestScore) {
         bestScore = score;
         bestDirection = direction;
@@ -90,10 +115,26 @@ public class MonteCarloBot implements Bot {
 
     float totalScore = 0;
     for (int i = 0; i < NUM_SIMULATIONS; i++) {
-      totalScore += simulateAndGetScore(GameModel.copyOf(startingState));
+      GameModel copy = GameModel.copyOf(startingState);
+      copy.addNumber();
+      totalScore += simulateAndGetScore(copy);
     }
 
     return totalScore / NUM_SIMULATIONS;
+  }
+
+  public void getAverageScoreAsync(GameModel startingState, AtomicDouble scoreAccumulator, CountDownLatch latch) {
+
+    threadPool.execute(() -> {
+      float totalScore = 0;
+      for (int i = 0; i < NUM_SIMULATIONS; i++) {
+        GameModel copy = GameModel.copyOf(startingState);
+        copy.addNumber();
+        totalScore += simulateAndGetScore(copy);
+      }
+      scoreAccumulator.addAndGet(totalScore / NUM_SIMULATIONS / NUM_THREADS);
+      latch.countDown();
+    });
   }
 
   /**
@@ -122,9 +163,9 @@ public class MonteCarloBot implements Bot {
       numMoves++;
     }
 
-//    return computeScore(model);
+    return computeScore(model);
 //    return computeGradientScore(model);
-    return computeEmptyCellScore(model);
+//    return computeEmptyCellScore(model);
   }
 
 
