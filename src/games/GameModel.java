@@ -66,7 +66,7 @@ public class GameModel {
   /**
    * Returns the highest valued cell.
    */
-  private int getHighestCellLog() {
+  public int getHighestCellLog() {
     int highestCell = 0;
     for (int i = 0; i < grid.length; i++) {
       highestCell = max(highestCell, grid[i]);

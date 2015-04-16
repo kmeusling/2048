@@ -41,7 +41,7 @@ public class BotEvaluator {
       minScore = min(minScore, score);
       maxScore = max(maxScore, score);
 
-      gamesByHighestCell[model.getHighestCell()]++;
+      gamesByHighestCell[model.getHighestCellLog()]++;
     }
     long timeMillis = System.currentTimeMillis() - startMillis;
     long timePerGame = (long) (timeMillis / (float) NUM_GAMES + 0.5);
