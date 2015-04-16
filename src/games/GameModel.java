@@ -5,6 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static games.Constants.LIKELIHOOD_OF_4;
 import static games.Constants.WINNING_POWER_OF_2;
+import static java.lang.Math.max;
 
 /**
  * Representation of the state of a game.
@@ -60,6 +61,24 @@ public class GameModel {
    */
   public byte[] getGrid() {
     return grid;
+  }
+
+  /**
+   * Returns the highest valued cell.
+   */
+  private int getHighestCellLog() {
+    int highestCell = 0;
+    for (int i = 0; i < grid.length; i++) {
+      highestCell = max(highestCell, grid[i]);
+    }
+    return highestCell;
+  }
+
+  /**
+   * Returns the highest valued cell, in human readable format.
+   */
+  public int getHighestCell() {
+    return 1 << getHighestCellLog();
   }
 
   /**
@@ -249,8 +268,6 @@ public class GameModel {
      */
     public int addNumber(byte[] grid) {
 
-      ThreadLocalRandom rng = ThreadLocalRandom.current();
-
       int numFreeCells = 0;
       for (int i = 0; i < grid.length; i++) {
         if (grid[i] == -1) {
@@ -259,6 +276,8 @@ public class GameModel {
       }
 
       if (numFreeCells == 0) return 0;
+
+      ThreadLocalRandom rng = ThreadLocalRandom.current();
 
       int index = rng.nextInt(numFreeCells);
       byte numberToAdd = (byte) (rng.nextFloat() < LIKELIHOOD_OF_4 ? 2 : 1);
